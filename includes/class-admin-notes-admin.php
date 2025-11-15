@@ -15,13 +15,14 @@ class Admin_Notes_Admin {
 	public function init() {
 		add_action( 'admin_menu', array( $this, 'add_menu_page' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'maybe_enqueue_assets' ) );
+		add_action( 'wp_ajax_admin_notes_update_visibility', array( $this, 'ajax_admin_notes_update_visibility' ) );
+		add_action( 'wp_ajax_admin_notes_update_roles', array( $this, 'ajax_admin_notes_update_roles' ) );
 	}
 
 	/**
 	 * Add Admin Notes top-level menu.
 	 */
 	public function add_menu_page() {
-		// Capability: edit_posts allows editors too. Change to manage_options to restrict to admins.
 		$capability = apply_filters( 'admin_notes_capability', 'edit_posts' );
 
 		add_menu_page(
@@ -40,9 +41,8 @@ class Admin_Notes_Admin {
 	 * @param string $hook
 	 */
 	public function maybe_enqueue_assets( $hook ) {
-		// If page is the admin notes page, assets will already be enqueued by Admin_Notes_Assets, but this ensures correct loading.
 		if ( isset( $_GET['page'] ) && 'admin-notes' === $_GET['page'] ) {
-			// do nothing; assets loader enqueues them.
+			// No action here; assets are enqueued by the Assets class.
 		}
 	}
 
@@ -84,7 +84,7 @@ class Admin_Notes_Admin {
 	}
 
 	/**
-	 * Retrieve notes for display.
+	 * Retrieve notes for display and filter them by visibility.
 	 *
 	 * @return WP_Post[]
 	 */
@@ -99,7 +99,73 @@ class Admin_Notes_Admin {
 		);
 
 		$query = new WP_Query( $args );
-		return $query->posts;
+		$posts = $query->posts;
+
+		if ( empty( $posts ) ) {
+			return array();
+		}
+
+		$filtered        = array();
+		$current_user_id = get_current_user_id();
+
+		foreach ( $posts as $post ) {
+			if ( $this->current_user_can_view_note( $current_user_id, $post ) ) {
+				$filtered[] = $post;
+			}
+		}
+
+		return $filtered;
+	}
+
+	/**
+	 * Determine whether a user can view a given note.
+	 *
+	 * @param int     $user_id
+	 * @param WP_Post $post
+	 * @return bool
+	 */
+	protected function current_user_can_view_note( $user_id, $post ) {
+		$visibility = get_post_meta( $post->ID, '_admin_notes_visibility', true );
+
+		// Default to only_me if not set
+		if ( '' === $visibility ) {
+			$visibility = 'only_me';
+		}
+
+		// Author always can see their own note
+		if ( intval( $post->post_author ) === intval( $user_id ) ) {
+			return true;
+		}
+
+		// Only me: non-authors cannot see
+		if ( 'only_me' === $visibility ) {
+			return false;
+		}
+
+		// All admins: check manage_options or role administrator
+		if ( 'all_admins' === $visibility ) {
+			// check capability
+			if ( user_can( $user_id, 'manage_options' ) ) {
+				return true;
+			}
+			// fallback: check role 'administrator'
+			$user = get_userdata( $user_id );
+			if ( $user && is_array( $user->roles ) && in_array( 'administrator', $user->roles, true ) ) {
+				return true;
+			}
+			return false;
+		}
+
+		// Editors & above: check edit_others_posts capability
+		if ( 'editors_and_above' === $visibility ) {
+			if ( user_can( $user_id, 'edit_others_posts' ) ) {
+				return true;
+			}
+			return false;
+		}
+
+		// Default deny
+		return false;
 	}
 
 	/**
@@ -117,6 +183,12 @@ class Admin_Notes_Admin {
 		$check   = json_decode( $check );
 		if ( ! is_array( $check ) ) {
 			$check = array();
+		}
+
+		// Get visibility meta
+		$visibility = get_post_meta( $post_id, '_admin_notes_visibility', true );
+		if ( '' === $visibility ) {
+			$visibility = 'only_me';
 		}
 
 		// collapsed state is per-user (user meta)
@@ -190,15 +262,54 @@ class Admin_Notes_Admin {
 
 					<div class="admin-note-visibility">
 						<select class="admin-note-visibility-select" data-note-id="<?php echo esc_attr( $post_id ); ?>">
-							<option value="only_me"><?php esc_html_e( 'Only Me', 'admin-notes' ); ?></option>
-							<option value="all_admins"><?php esc_html_e( 'All Admins', 'admin-notes' ); ?></option>
-							<option value="editors_and_above"><?php esc_html_e( 'Editors & above', 'admin-notes' ); ?></option>
+							<option value="only_me" <?php selected( $visibility, 'only_me' ); ?>><?php esc_html_e( 'Only Me', 'admin-notes' ); ?></option>
+							<option value="all_admins" <?php selected( $visibility, 'all_admins' ); ?>><?php esc_html_e( 'All Admins', 'admin-notes' ); ?></option>
+							<option value="editors_and_above" <?php selected( $visibility, 'editors_and_above' ); ?>><?php esc_html_e( 'Editors & above', 'admin-notes' ); ?></option>
 						</select>
 					</div>
+
+
+
+
+
+
 				</div>
 			</div>
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+
+	// ============================= phase 8 ===========================
+
+	// Save visibility mode
+	public function ajax_admin_notes_update_visibility() {
+			check_ajax_referer( 'admin_notes_nonce', 'security' );
+
+			$note_id    = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
+			$visibility = isset( $_POST['visibility'] ) ? sanitize_text_field( $_POST['visibility'] ) : 'me';
+
+		if ( $note_id && current_user_can( 'edit_post', $note_id ) ) {
+			update_post_meta( $note_id, '_admin_note_visibility', $visibility );
+			wp_send_json_success( array( 'saved' => true ) );
+		} else {
+			wp_send_json_error( array( 'saved' => false ) );
+		}
+	}
+
+	// Save roles for notes
+	public function ajax_admin_notes_update_roles() {
+		check_ajax_referer( 'admin_notes_nonce', 'security' );
+
+		$note_id = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
+		$roles   = isset( $_POST['roles'] ) ? array_map( 'sanitize_text_field', (array) $_POST['roles'] ) : array();
+
+		if ( $note_id && current_user_can( 'edit_post', $note_id ) ) {
+			update_post_meta( $note_id, '_admin_note_roles', $roles );
+			wp_send_json_success( array( 'saved' => true ) );
+		} else {
+			wp_send_json_error( array( 'saved' => false ) );
+		}
 	}
 }

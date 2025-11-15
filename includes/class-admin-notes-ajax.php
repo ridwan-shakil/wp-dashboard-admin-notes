@@ -9,7 +9,8 @@
  * - save_checklist
  * - save_color
  * - toggle_minimize
- * - save_order (new)
+ * - save_order
+ * - save_visibility (new)
  *
  * All endpoints expect a valid nonce and capability checks.
  */
@@ -27,9 +28,10 @@ class Admin_Notes_Ajax {
 		add_action( 'wp_ajax_admin_notes_save_checklist', array( $this, 'ajax_save_checklist' ) );
 		add_action( 'wp_ajax_admin_notes_save_color', array( $this, 'ajax_save_color' ) );
 		add_action( 'wp_ajax_admin_notes_toggle_minimize', array( $this, 'ajax_toggle_minimize' ) );
-
-		// New: save notes order
 		add_action( 'wp_ajax_admin_notes_save_order', array( $this, 'ajax_save_order' ) );
+
+		// New: save visibility
+		add_action( 'wp_ajax_admin_notes_save_visibility', array( $this, 'ajax_save_visibility' ) );
 	}
 
 	/**
@@ -54,6 +56,8 @@ class Admin_Notes_Ajax {
 		// Default meta
 		update_post_meta( $post_id, '_admin_notes_checklist', wp_json_encode( array() ) );
 		update_post_meta( $post_id, '_admin_notes_color', '#FFF9C4' );
+		// Default visibility: only the author
+		update_post_meta( $post_id, '_admin_notes_visibility', 'only_me' );
 
 		// ensure order meta set by CPT hook; if not, set quickly
 		$order = get_post_meta( $post_id, '_admin_notes_order', true );
@@ -129,7 +133,6 @@ class Admin_Notes_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'admin-notes' ) ) );
 		}
 
-		// Basic validation: decode and re-encode only allowed keys
 		$decoded = json_decode( wp_unslash( $check_js ) );
 		if ( ! is_array( $decoded ) ) {
 			$decoded = array();
@@ -212,16 +215,13 @@ class Admin_Notes_Ajax {
 		$this->verify_request();
 
 		$order = isset( $_POST['order'] ) ? wp_unslash( $_POST['order'] ) : '';
-		// order expected as JSON array or comma-separated string
-		$ids = array();
+		$ids   = array();
 
 		if ( is_string( $order ) && '' !== $order ) {
-			// try JSON decode first
 			$decoded = json_decode( $order );
 			if ( is_array( $decoded ) ) {
 				$ids = array_map( 'intval', $decoded );
 			} else {
-				// fallback to comma separated
 				$parts = explode( ',', $order );
 				$ids   = array_map( 'intval', $parts );
 			}
@@ -231,7 +231,6 @@ class Admin_Notes_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Invalid order data', 'admin-notes' ) ) );
 		}
 
-		// Update order meta for each id; smaller index = higher priority (start at 1)
 		$index = 1;
 		foreach ( $ids as $post_id ) {
 			if ( $post_id && 'admin_note' === get_post_type( $post_id ) ) {
@@ -239,6 +238,34 @@ class Admin_Notes_Ajax {
 				++$index;
 			}
 		}
+
+		wp_send_json_success();
+	}
+
+	/**
+	 * Save visibility setting for a note.
+	 */
+	public function ajax_save_visibility() {
+		$this->verify_request();
+
+		$post_id    = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
+		$visibility = isset( $_POST['visibility'] ) ? sanitize_text_field( wp_unslash( $_POST['visibility'] ) ) : '';
+
+		$allowed = array( 'only_me', 'all_admins', 'editors_and_above' );
+
+		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid note ID', 'admin-notes' ) ) );
+		}
+
+		if ( ! in_array( $visibility, $allowed, true ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid visibility value', 'admin-notes' ) ) );
+		}
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'admin-notes' ) ) );
+		}
+
+		update_post_meta( $post_id, '_admin_notes_visibility', $visibility );
 
 		wp_send_json_success();
 	}
