@@ -145,25 +145,60 @@ jQuery(function ($) {
 		const noteID = $card.data("note-id");
 
 		/** ------------------------
-		 * Title editing
+		 * Title editing ( Debounce save)
 		 * ---------------------- */
-		$card
-			.find(".admin-note-title")
-			.on("blur", saveTitle)
+		let titleTimer = null;
+		let lastSavedTitle = null;
+
+		$card.find(".admin-note-title")
+			.on("input", function () {
+				const $input = $(this);
+				const newVal = $input.val();
+
+				// Reset debounce timer
+				clearTimeout(titleTimer);
+
+				titleTimer = setTimeout(function () {
+					// Skip if title didn't change
+					if (newVal === lastSavedTitle) return;
+
+					saveTitle($input);
+				}, 500);  // adjust delay as needed
+			})
+
+			// Pressing Enter → blur → triggers save
 			.on("keydown", function (e) {
 				if (e.key === "Enter") {
 					e.preventDefault();
 					$(this).blur();
 				}
+			})
+
+			// On blur — save immediately
+			.on("blur", function () {
+				const $input = $(this);
+				const newVal = $input.val();
+
+				clearTimeout(titleTimer); // Cancel pending debounce
+
+				if (newVal !== lastSavedTitle) {
+					saveTitle($input);
+				}
 			});
 
-		function saveTitle() {
+
+		// AJAX SAVE FUNCTION
+		function saveTitle($input) {
+			const newVal = $input.val();
+
 			postAjax({
 				action: "admin_notes_save_title",
 				note_id: noteID,
 				nonce: AdminNotes.nonce,
-				title: $(this).val(),
+				title: newVal,
 			});
+
+			lastSavedTitle = newVal; // cache last saved value
 		}
 
 		/** ------------------------
