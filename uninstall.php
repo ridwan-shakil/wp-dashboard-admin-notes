@@ -3,6 +3,10 @@
  * Fired when the plugin is uninstalled.
  *
  * Deletes the Custom Post Type, all associated posts, and post meta.
+ *
+ * @package admin-notes
+ * @since 1.0.0
+ * @author MD.Ridwan <ridwansweb@email.com>
  */
 
 // If uninstall not called from WordPress, exit.

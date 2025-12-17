@@ -1,11 +1,10 @@
 <?php
 /**
- * Plugin Name:       WP Draggable Admin Notes
- * Plugin URI:        https://example.com/
+ * Plugin Name:       Plugmint Draggable Admin Notes
  * Description:       Create draggable admin notes with checklist tasks in the WP admin.
  * Version:           1.0.0
  * Author:            MD.Ridwan
- * Author URI:        https://example.com/
+ * Author URI:        https://github.com/ridwan-shakil
  * Text Domain:       admin-notes
  * Domain Path:       /languages
  * License:           GPLv2 or later

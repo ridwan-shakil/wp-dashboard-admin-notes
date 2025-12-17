@@ -1,12 +1,19 @@
 <?php
 /**
  * Admin page renderer and helpers.
+ *
+ * @package admin-notes
+ * @since 1.0.0
+ * @author MD.Ridwan <ridwansweb@email.com>
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Admin page & note render class
+ */
 class Admin_Notes_Admin {
 
 	/**
@@ -37,14 +44,14 @@ class Admin_Notes_Admin {
 	 * Render admin page (notes board).
 	 */
 	public function render_page() {
-		// Capability check
+		// Capability check.
 		$capability = apply_filters( 'admin_notes_capability', 'edit_posts' );
 
 		if ( ! current_user_can( $capability ) ) {
 			wp_die( esc_html_e( 'You do not have permission to view this page.', 'admin-notes' ) );
 		}
 
-		// Get notes ordered by meta _admin_notes_order, pinned first
+		// Get notes ordered by meta _admin_notes_order, pinned first.
 		$notes = $this->get_notes_for_display();
 
 		?>
@@ -139,7 +146,6 @@ class Admin_Notes_Admin {
 			'post_type'      => 'admin_note',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
-			'meta_key'       => '_admin_notes_order',
 			'orderby'        => 'meta_value_num',
 			'order'          => 'ASC',
 		);
@@ -151,7 +157,7 @@ class Admin_Notes_Admin {
 			return array();
 		}
 
-		//Filter notes by visibility
+		// Filter notes by visibility.
 		$filtered        = array();
 		$current_user_id = get_current_user_id();
 
@@ -168,37 +174,37 @@ class Admin_Notes_Admin {
 	 * Determine whether a user can view a given note.
 	 *
 	 * @param int     $user_id
-	 * @param WP_Post $post
+	 * @param wp_post $post
 	 * @return bool
 	 */
-	protected function current_user_can_view_note( $user_id, $post ) {
+	protected function current_user_can_view_note( $user_id, $post, ) {
 		$visibility = get_post_meta( $post->ID, '_admin_note_visibility', true );
 
-		// Default to only_me if not set
+		// Default to only_me if not set.
 		if ( '' === $visibility ) {
 			$visibility = 'only_me';
 		}
 
-		// Author always can see their own note
+		// Author always can see their own note.
 		if ( intval( $post->post_author ) === intval( $user_id ) ) {
 			return true;
 		}
 
-		// Only me: non-authors cannot see
+		// Only me: non-authors cannot see.
 		if ( 'only_me' === $visibility ) {
 			return false;
 		}
 
-		// All admins: check manage_options or role administrator
+		// All admins: check manage_options or role administrator.
 		if ( 'all_admins' === $visibility ) {
-			// check capability
+			// check capability.
 			if ( user_can( $user_id, 'manage_options' ) ) {
 				return true;
 			}
 			return false;
 		}
 
-		// Editors & above: check edit_others_posts capability
+		// Editors & above: check edit_others_posts capability.
 		if ( 'editors_and_above' === $visibility ) {
 			if ( user_can( $user_id, 'edit_others_posts' ) ) {
 				return true;
@@ -206,7 +212,7 @@ class Admin_Notes_Admin {
 			return false;
 		}
 
-		// Default deny
+		// Default deny.
 		return false;
 	}
 
@@ -231,11 +237,11 @@ class Admin_Notes_Admin {
 			$check = array();
 		}
 
-		// Visibility
+		// Visibility.
 		$visibility = get_post_meta( $post_id, '_admin_note_visibility', true );
 		$visibility = $visibility ? sanitize_key( $visibility ) : 'only_me';
 
-		// Collapsed state
+		// Collapsed state.
 		$user_min  = get_user_meta( get_current_user_id(), 'admin_notes_minimized', true );
 		$collapsed = ( is_array( $user_min ) && in_array( $post_id, $user_min, true ) );
 

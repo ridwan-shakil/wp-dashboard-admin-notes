@@ -1,24 +1,44 @@
 <?php
 /**
  * Enqueue assets for Admin Notes.
+ *
+ * Handles the registration and enqueuing of CSS styles and JavaScript scripts
+ * required for the Admin Notes plugin administration pages.
+ *
+ * @package admin-notes
+ * @since 1.0.0
+ * @author MD.Ridwan <ridwansweb@email.com>
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Manages plugin assets CSS & JS
+ */
 class Admin_Notes_Assets {
 
+	/**
+	 * Enqueue hook fires on plugin init.
+	 */
 	public function init() {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue' ) );
 	}
 
+	/**
+	 * Enqueues CSS and JavaScript files for the admin interface.
+	 *
+	 * Assets are only loaded on the plugin's top-level admin page.
+	 * Uses wp_localize_script to pass necessary AJAX variables.
+	 *
+	 * @param string $hook The current admin page hook.
+	 * @return void
+	 */
 	public function enqueue( $hook = '' ) {
-		// Only enqueue on our admin page(s). We check page parameter.
-		// if ( isset( $_GET['page'] ) && 'admin-notes' === $_GET['page'] )
-
+		// Only enqueue on our admin page(s).
 		if ( 'toplevel_page_admin-notes' === $hook ) {
-			// CSS
+			// CSS.
 			wp_enqueue_style(
 				'admin-notes-style',
 				ADMIN_NOTES_URL . 'assets/css/admin-notes.css',
@@ -26,13 +46,11 @@ class Admin_Notes_Assets {
 				ADMIN_NOTES_VERSION
 			);
 
-			// ---------------------------
-			// JS - Use wp_localize_script for ajax.
-			// ---------------------------
-			// jQuery UI Sortable
+			// Enqueue jQuery UI Sortable dependency.
 			wp_enqueue_script(
 				'jquery-ui-sortable'
 			);
+			// Main jQuery file.
 			wp_enqueue_script(
 				'admin-notes-script',
 				ADMIN_NOTES_URL . 'assets/js/admin-notes.js',
@@ -40,6 +58,7 @@ class Admin_Notes_Assets {
 				ADMIN_NOTES_VERSION,
 				true
 			);
+			// Pass AJAX and localization variables to the script.
 			wp_localize_script(
 				'admin-notes-script',
 				'AdminNotes',

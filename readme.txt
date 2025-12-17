@@ -1,6 +1,6 @@
-=== WP Draggable Admin Notes ===
+=== Plugmint Draggable Admin Notes ===
 Contributors: plugmint
-Tags: admin notes, dashboard notes, sticky notes, wp admin, todo list, checklist
+Tags: admin notes, dashboard notes, sticky notes, wp admin, todo list
 Requires at least: 5.5
 Tested up to: 6.9
 Requires PHP: 7.4
@@ -8,11 +8,11 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Create draggable admin notes with checklists inside your WordPress dashboard. Easily organize important tasks, reminders, and team messages directly in the admin area.
+Create draggable admin notes with checklists inside your WordPress dashboard. Easily organize important tasks or reminders.
 
 == Description ==
 
-WP Draggable Admin Notes lets you create and organize custom notes directly inside the WordPress admin dashboard.  
+Plugmint Draggable Admin Notes lets you create and organize custom notes directly inside the WordPress admin dashboard.  
 Each note is fully draggable and can include simple checklists for task management. Note items can be draggable from one note to another note.
 
 Perfect for site managers, content editors, and teams who want a simple way to keep reminders and to-dos inside the admin panel.

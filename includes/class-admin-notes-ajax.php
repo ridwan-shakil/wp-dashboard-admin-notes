@@ -2,25 +2,33 @@
 /**
  * AJAX handlers for Admin Notes.
  *
- * Provides simple endpoints:
- * - add_note
- * - delete_note
- * - save_title
- * - save_checklist
- * - save_color
- * - toggle_minimize
- * - save_order
- * - save_visibility (new)
- *
+ * Provides simple endpoints for managing notes (add, delete, save, order, visibility, etc.).
  * All endpoints expect a valid nonce and capability checks.
+ *
+ * @package admin-notes
+ * @since 1.0.0
+ * @author MD.Ridwan <ridwansweb@email.com>
  */
+
+use WpOrg\Requests\Capability;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Handles all AJAX requests for the Admin Notes plugin.
+ *
+ * Registers WordPress 'wp_ajax_' actions and implements the callback methods
+ * for all front-end note interactions.
+ */
 class Admin_Notes_Ajax {
 
+	/**
+	 * Registers all necessary WordPress AJAX actions.
+	 *
+	 * @return void
+	 */
 	public function init() {
 		add_action( 'wp_ajax_admin_notes_add', array( $this, 'ajax_add_note' ) );
 		add_action( 'wp_ajax_admin_notes_delete', array( $this, 'ajax_delete_note' ) );
@@ -29,13 +37,15 @@ class Admin_Notes_Ajax {
 		add_action( 'wp_ajax_admin_notes_save_color', array( $this, 'ajax_save_color' ) );
 		add_action( 'wp_ajax_admin_notes_toggle_minimize', array( $this, 'ajax_toggle_minimize' ) );
 		add_action( 'wp_ajax_admin_notes_save_order', array( $this, 'ajax_save_order' ) );
-
-		//  save visibility
 		add_action( 'wp_ajax_admin_notes_save_visibility', array( $this, 'ajax_save_visibility' ) );
 	}
 
 	/**
-	 * Add new note (creates CPT post ).
+	 * Creates a new note (Custom Post Type post).
+	 *
+	 * Responds with JSON success/error.
+	 *
+	 * @return void
 	 */
 	public function ajax_add_note() {
 		$this->verify_request();
@@ -65,12 +75,15 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Delete note.
+	 * Deletes an existing note by ID.
+	 *
+	 * Requires note ID and nonce verification. Responds with JSON success/error.
+	 *
+	 * @return void
 	 */
 	public function ajax_delete_note() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request().
 		$post_id = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
 
 		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
@@ -87,14 +100,18 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Save title.
+	 * Saves the title of an existing note.
+	 *
+	 * Updates the CPT post title. Responds with JSON success/error.
+	 *
+	 * @return void
 	 */
 	public function ajax_save_title() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
+		/* phpcs:disable WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request() */
 		$post_id = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
 		$title   = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+		/* phpcs:enable */
 
 		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
 			wp_send_json_error();
@@ -115,15 +132,18 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Save checklist (expects JSON array).
+	 * Saves the checklist data as JSON in post meta.
+	 *
+	 * Expected data is a JSON array of checklist items. Responds with JSON success/error.
+	 *
+	 * @return void
 	 */
 	public function ajax_save_checklist() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
+		/* phpcs:disable WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request() */
 		$post_id  = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
-		$check_js = isset( $_POST['checklist'] ) ? wp_unslash( $_POST['checklist'] ) : '[]';
-
+		$check_js = isset( $_POST['checklist'] ) ? sanitize_text_field( wp_unslash( $_POST['checklist'] ) ) : '[]';
+		/* phpcs:enable */
 		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
 			wp_send_json_error();
 		}
@@ -154,15 +174,18 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Save color.
+	 * Saves the background color of a note.
+	 *
+	 * Updates the color in post meta. Responds with JSON success/error.
+	 *
+	 * @return void
 	 */
 	public function ajax_save_color() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
+		/* phpcs:disable WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request() */
 		$post_id = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
 		$color   = isset( $_POST['color'] ) ? sanitize_hex_color( wp_unslash( $_POST['color'] ) ) : '';
-
+		/* phpcs:enable */
 		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
 			wp_send_json_error();
 		}
@@ -178,15 +201,18 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Toggle minimize state (saved per-user).
+	 * Toggles the minimized state of a note for the current user.
+	 *
+	 * Saves the state in user meta. Responds with JSON success/error.
+	 *
+	 * @return void
 	 */
 	public function ajax_toggle_minimize() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
+		/* phpcs:disable WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request() */
 		$post_id = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
 		$state   = isset( $_POST['state'] ) ? boolval( $_POST['state'] ) : false;
-
+		/* phpcs:enable */
 		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
 			wp_send_json_error();
 		}
@@ -197,7 +223,6 @@ class Admin_Notes_Ajax {
 		}
 
 		if ( $state ) {
-			// add
 			if ( ! in_array( $post_id, $meta, true ) ) {
 				$meta[] = $post_id;
 			}
@@ -211,13 +236,16 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Save order of notes (expects 'order' => array of post IDs in desired order).
+	 * Saves the display order of notes.
+	 *
+	 * Expects an array of post IDs in the desired order. Updates '_admin_notes_order' post meta.
+	 *
+	 * @return void
 	 */
 	public function ajax_save_order() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
-		$order = isset( $_POST['order'] ) ? wp_unslash( $_POST['order'] ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request().
+		$order = isset( $_POST['order'] ) ? sanitize_text_field( wp_unslash( $_POST['order'] ) ) : '';
 		$ids   = array();
 
 		if ( is_string( $order ) && '' !== $order ) {
@@ -246,15 +274,18 @@ class Admin_Notes_Ajax {
 	}
 
 	/**
-	 * Save visibility setting for a note.
+	 * Saves the visibility setting (e.g., 'only_me', 'all_admins') for a note.
+	 *
+	 * Updates the '_admin_note_visibility' post meta.
+	 *
+	 * @return void
 	 */
 	public function ajax_save_visibility() {
 		$this->verify_request();
-		wp_verify_nonce( $_POST['nonce'], 'admin_notes_nonce' );
-
+		/* phpcs:disable WordPress.Security.NonceVerification.Missing -- Verification is performed in $this->verify_request() */
 		$post_id    = isset( $_POST['note_id'] ) ? intval( $_POST['note_id'] ) : 0;
 		$visibility = isset( $_POST['visibility'] ) ? sanitize_text_field( wp_unslash( $_POST['visibility'] ) ) : '';
-
+		/* phpcs:enable */
 		$allowed = array( 'only_me', 'all_admins', 'editors_and_above' );
 
 		if ( ! $post_id || 'admin_note' !== get_post_type( $post_id ) ) {
@@ -269,28 +300,35 @@ class Admin_Notes_Ajax {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'admin-notes' ) ) );
 		}
 
-		// Check if the value is actually changing
+		// Check if the value is actually changing.
 		$current_visibility = get_post_meta( $post_id, '_admin_note_visibility', true );
 		if ( $current_visibility === $visibility ) {
-			// No update needed, return success anyway since the desired state is met
+			// No update needed, return success anyway since the desired state is met.
 			wp_send_json_success();
 		}
-		$check = update_post_meta( $post_id, '_admin_note_visibility', $visibility );
+		update_post_meta( $post_id, '_admin_note_visibility', $visibility );
 
 		wp_send_json_success();
 	}
 
 	/**
-	 * Verify nonce & capability.
+	 * Checks for a valid nonce and the required user capability.
+	 *
+	 * Terminates execution with a JSON error response on failure.
+	 *
+	 * @return void
 	 */
 	protected function verify_request() {
-		if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'admin_notes_nonce' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'admin-notes' ) ) );
-		}
-
+		// Capability check.
 		$capability = apply_filters( 'admin_notes_capability', 'edit_posts' );
 		if ( ! current_user_can( $capability ) ) {
 			wp_send_json_error( array( 'message' => __( 'Insufficient permissions', 'admin-notes' ) ) );
+		}
+
+		// Nonce verification.
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+		if ( empty( $_POST['nonce'] ) || ! wp_verify_nonce( $nonce, 'admin_notes_nonce' ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid nonce', 'admin-notes' ) ) );
 		}
 	}
 }
