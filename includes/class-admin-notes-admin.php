@@ -7,6 +7,8 @@
  * @author MD.Ridwan <ridwansweb@email.com>
  */
 
+namespace Draggable_Notes\Admin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -150,7 +152,7 @@ class Admin_Notes_Admin {
 			'order'          => 'ASC',
 		);
 
-		$query = new WP_Query( $args );
+		$query = new \WP_Query( $args );
 		$posts = $query->posts;
 
 		if ( empty( $posts ) ) {

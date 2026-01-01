@@ -6,6 +6,7 @@
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
+namespace Draggable_Notes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -92,7 +93,7 @@ class Admin_Notes_CPT {
 			'cache_results'  => true,   // uses WP caching layer.
 		);
 
-		$query = new WP_Query( $args );
+		$query = new \WP_Query( $args );
 
 		$max_order = 0;
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Enqueue assets for Admin Notes.
  *
@@ -9,6 +10,7 @@
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
+namespace Draggable_notes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -41,9 +43,9 @@ class Admin_Notes_Assets {
 			// CSS.
 			wp_enqueue_style(
 				'admin-notes-style',
-				ADMIN_NOTES_URL . 'assets/css/admin-notes.css',
+				PLUGMINT_NOTES_URL . 'assets/css/admin-notes.css',
 				array(),
-				ADMIN_NOTES_VERSION
+				PLUGMINT_NOTES_VERSION
 			);
 
 			// Enqueue jQuery UI Sortable dependency.
@@ -53,9 +55,9 @@ class Admin_Notes_Assets {
 			// Main jQuery file.
 			wp_enqueue_script(
 				'admin-notes-script',
-				ADMIN_NOTES_URL . 'assets/js/admin-notes.js',
+				PLUGMINT_NOTES_URL . 'assets/js/admin-notes.js',
 				array( 'jquery', 'jquery-ui-sortable' ),
-				ADMIN_NOTES_VERSION,
+				PLUGMINT_NOTES_VERSION,
 				true
 			);
 			// Pass AJAX and localization variables to the script.

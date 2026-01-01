@@ -15,29 +15,29 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'ADMIN_NOTES_VERSION', '1.0.0' );
-define( 'ADMIN_NOTES_PATH', plugin_dir_path( __FILE__ ) );
-define( 'ADMIN_NOTES_URL', plugin_dir_url( __FILE__ ) );
-define( 'ADMIN_NOTES_FILE', __FILE__ );
+define( 'PLUGMINT_NOTES_VERSION', '1.0.0' );
+define( 'PLUGMINT_NOTES_PATH', plugin_dir_path( __FILE__ ) );
+define( 'PLUGMINT_NOTES_URL', plugin_dir_url( __FILE__ ) );
+define( 'PLUGMINT_NOTES_FILE', __FILE__ );
 
 // Load activation class.
-require_once ADMIN_NOTES_PATH . '/includes/class-admin-notes-activation.php';
+require_once PLUGMINT_NOTES_PATH . '/includes/class-admin-notes-activation.php';
 
 // Run activation code.
-register_activation_hook( __FILE__, 'admin_notes_on_activate' );
-function admin_notes_on_activate() {
-	$activation = new Admin_Notes_Activation();
+register_activation_hook( __FILE__, 'plugmint_notes_on_activate' );
+function plugmint_notes_on_activate() {
+	$activation = new Draggable_Notes\Admin\Admin_Notes_Activation();
 	$activation->run_activation();
 }
 
 // Load main plugin loader.
-require_once ADMIN_NOTES_PATH . 'includes/class-admin-notes-loader.php';
+require_once PLUGMINT_NOTES_PATH . 'includes/class-admin-notes-loader.php';
 
 /**
  * Boot plugin after all plugins are loaded.
  */
-function admin_notes_run() {
-	$loader = new Admin_Notes_Loader();
+function plugmint_notes_run() {
+	$loader = new Draggable_Notes\Admin\Admin_Notes_Loader();
 	$loader->run();
 }
-add_action( 'plugins_loaded', 'admin_notes_run' );
+add_action( 'plugins_loaded', 'plugmint_notes_run' );

@@ -10,17 +10,18 @@
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
+namespace Draggable_Notes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 // Include required core files.
-require_once ADMIN_NOTES_PATH . 'includes/class-admin-notes-activation.php';
-require_once ADMIN_NOTES_PATH . 'includes/class-admin-notes-cpt.php';
-require_once ADMIN_NOTES_PATH . 'includes/class-admin-notes-admin.php';
-require_once ADMIN_NOTES_PATH . 'includes/class-admin-notes-assets.php';
-require_once ADMIN_NOTES_PATH . 'includes/class-admin-notes-ajax.php';
+require_once PLUGMINT_NOTES_PATH . 'includes/class-admin-notes-activation.php';
+require_once PLUGMINT_NOTES_PATH . 'includes/class-admin-notes-cpt.php';
+require_once PLUGMINT_NOTES_PATH . 'includes/class-admin-notes-admin.php';
+require_once PLUGMINT_NOTES_PATH . 'includes/class-admin-notes-assets.php';
+require_once PLUGMINT_NOTES_PATH . 'includes/class-admin-notes-ajax.php';
 
 
 /**
@@ -89,7 +90,7 @@ class Admin_Notes_Loader {
 		$this->cpt        = new Admin_Notes_CPT();
 		$this->admin      = new Admin_Notes_Admin();
 		$this->assets     = new Admin_Notes_Assets();
-		$this->ajax       = new Admin_Notes_Ajax();
+		$this->ajax       = new \Draggable_notes\Admin\Admin_Notes_Ajax();
 	}
 
 

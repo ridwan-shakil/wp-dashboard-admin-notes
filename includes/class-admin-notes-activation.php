@@ -9,6 +9,7 @@
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
+namespace Draggable_Notes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -41,7 +42,7 @@ class Admin_Notes_Activation {
 
 		// Add settings link.
 		add_filter(
-			'plugin_action_links_' . plugin_basename( ADMIN_NOTES_FILE ),
+			'plugin_action_links_' . plugin_basename( PLUGMINT_NOTES_FILE ),
 			array( $this, 'add_settings_link' )
 		);
 	}
