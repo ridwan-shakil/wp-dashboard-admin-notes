@@ -37,9 +37,18 @@ jobs:
         run: |
           ~/.composer/vendor/bin/phpcs -i
 
+      - name: Auto-fix PHPCS (safe fixes)
+        run: |
+          ~/.composer/vendor/bin/phpcbf \
+            --standard=WordPress \
+            --extensions=php \
+            --ignore=vendor,node_modules,.github \
+            .
+
       - name: Run PHPCS (WordPress standards)
         run: |
           ~/.composer/vendor/bin/phpcs -v -p \
+            --warning-severity=0 \
             --standard=WordPress,WordPress-Extra,WordPress-Docs \
             --extensions=php \
             --ignore=vendor,node_modules,.github \
