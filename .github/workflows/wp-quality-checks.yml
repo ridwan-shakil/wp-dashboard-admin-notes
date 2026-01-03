@@ -39,7 +39,7 @@ jobs:
 
       - name: Run PHPCS (WordPress standards)
         run: |
-          ~/.composer/vendor/bin/phpcs \
+          ~/.composer/vendor/bin/phpcs -v -p \
             --standard=WordPress,WordPress-Extra,WordPress-Docs \
             --extensions=php \
             --ignore=vendor,node_modules,.github \
