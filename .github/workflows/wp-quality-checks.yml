@@ -1,4 +1,4 @@
-name: WordPress Plugin Quality Checks
+name: WordPress Plugin Quality Pipeline
 
 on:
   push:
@@ -9,35 +9,45 @@ on:
 jobs:
   quality-checks:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [7.4, 8.0, 8.1, 8.2, 8.3]
 
     steps:
+      # --- Step 1: Checkout ---
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # --- Step 2: Setup PHP ---
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: ${{ matrix.php }}
           coverage: none
           tools: composer
 
+      # --- Step 3: Validate PHP syntax ---
       - name: Validate PHP syntax
         run: |
           find . -type f -name "*.php" ! -path "./vendor/*" -print0 | xargs -0 -n1 php -l
 
-      - name: Install PHPCS & WordPress standards
+      # --- Step 4: Install Composer dependencies ---
+      - name: Install Composer dependencies
         run: |
           composer global config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
           composer global require \
             phpcsstandards/php_codesniffer:^3.9 \
             wp-coding-standards/wpcs:^3.1 \
             phpcompatibility/phpcompatibility-wp:^2.1
+          composer install --no-interaction --prefer-dist
 
+      # --- Step 5: Verify PHPCS installation ---
       - name: Verify PHPCS installation
         run: |
           ~/.composer/vendor/bin/phpcs -i
 
-      - name: Auto-fix PHPCS (safe fixes)
+      # --- Step 6: Auto-fix PHPCS (safe fixes) ---
+      - name: Auto-fix PHPCS (formatting)
         run: |
           ~/.composer/vendor/bin/phpcbf \
             --standard=WordPress \
@@ -45,6 +55,7 @@ jobs:
             --ignore=vendor,node_modules,.github \
             .
 
+      # --- Step 7: Run PHPCS / WPCS checks ---
       - name: Run PHPCS (WordPress standards)
         run: |
           ~/.composer/vendor/bin/phpcs -v -p \
@@ -54,7 +65,8 @@ jobs:
             --ignore=vendor,node_modules,.github \
             .
 
-      - name: Run PHPCompatibility (WP supported PHP versions)
+      # --- Step 8: Run PHPCompatibility ---
+      - name: Run PHPCompatibility (WP supported PHP)
         run: |
           ~/.composer/vendor/bin/phpcs \
             --standard=PHPCompatibilityWP \
@@ -62,3 +74,49 @@ jobs:
             --extensions=php \
             --ignore=vendor,node_modules,.github \
             .
+
+      # --- Step 9: Run PHPUnit tests (if tests exist) ---
+      - name: Run PHPUnit
+        run: |
+          if [ -f phpunit.xml.dist ]; then
+            composer install --dev --no-interaction --prefer-dist
+            vendor/bin/phpunit --configuration phpunit.xml.dist
+          else
+            echo "No phpunit.xml.dist found, skipping PHPUnit tests."
+          fi
+
+      # --- Step 10: JS / CSS linting (optional) ---
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install NPM dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+          else
+            echo "No package.json found, skipping JS/CSS linting."
+          fi
+
+      - name: Run JS Lint
+        run: |
+          if [ -f package.json ]; then
+            npx eslint assets/js || echo "JS lint completed"
+          fi
+
+      - name: Run CSS Lint
+        run: |
+          if [ -f package.json ]; then
+            npx stylelint "assets/css/**/*.css" || echo "CSS lint completed"
+          fi
+
+      # --- Step 11: Validate readme.txt ---
+      - name: Validate readme.txt
+        run: |
+          if [ -f readme.txt ]; then
+            grep -q "=== Description ===" readme.txt || echo "Warning: Missing Description section"
+            grep -q "== Changelog ==" readme.txt || echo "Warning: Missing Changelog section"
+          else
+            echo "No readme.txt found, skipping readme validation."
+          fi
