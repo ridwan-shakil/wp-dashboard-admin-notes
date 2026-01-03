@@ -1,0 +1,13 @@
+{
+  "name": "yourname/plugin-slug",
+  "require-dev": {
+    "php": ">=7.4",
+    "phpcodesniffer/php_codesniffer": "^3.9",
+    "wp-coding-standards/wpcs": "^3.1",
+    "phpcompatibility/php-compatibility-wp": "^2.1"
+  },
+  "scripts": {
+    "phpcs": "vendor/bin/phpcs",
+    "phpcbf": "vendor/bin/phpcbf"
+  }
+}
