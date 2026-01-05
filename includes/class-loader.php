@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * responsible for activation, custom post types, admin interface,
  * assets, and AJAX handling.
  */
-class Admin_Notes_Loader {
+class Loader {
 
 	/**
 	 * Holds the Admin_Notes_Activation instance.
