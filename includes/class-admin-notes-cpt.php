@@ -1,12 +1,21 @@
 <?php
 /**
  * Register the admin_note CPT.
+ *
+ * @package draggable-notes
+ * @since 1.0.0
+ * @author MD.Ridwan <ridwansweb@email.com>
  */
+
+namespace Draggable_Notes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * CPT genaration class
+ */
 class Admin_Notes_CPT {
 
 	/**
@@ -25,18 +34,18 @@ class Admin_Notes_CPT {
 	 */
 	public function register_cpt() {
 		$labels = array(
-			'name'               => __( 'Admin Notes', 'admin-notes' ),
-			'singular_name'      => __( 'Admin Note', 'admin-notes' ),
-			'add_new'            => __( 'Add Note', 'admin-notes' ),
-			'add_new_item'       => __( 'Add New Note', 'admin-notes' ),
-			'edit_item'          => __( 'Edit Note', 'admin-notes' ),
-			'new_item'           => __( 'New Note', 'admin-notes' ),
-			'all_items'          => __( 'All Notes', 'admin-notes' ),
-			'view_item'          => __( 'View Note', 'admin-notes' ),
-			'search_items'       => __( 'Search Notes', 'admin-notes' ),
-			'not_found'          => __( 'No notes found', 'admin-notes' ),
-			'not_found_in_trash' => __( 'No notes found in Trash', 'admin-notes' ),
-			'menu_name'          => __( 'Admin Notes', 'admin-notes' ),
+			'name'               => __( 'Admin Notes', 'draggable-notes' ),
+			'singular_name'      => __( 'Admin Note', 'draggable-notes' ),
+			'add_new'            => __( 'Add Note', 'draggable-notes' ),
+			'add_new_item'       => __( 'Add New Note', 'draggable-notes' ),
+			'edit_item'          => __( 'Edit Note', 'draggable-notes' ),
+			'new_item'           => __( 'New Note', 'draggable-notes' ),
+			'all_items'          => __( 'All Notes', 'draggable-notes' ),
+			'view_item'          => __( 'View Note', 'draggable-notes' ),
+			'search_items'       => __( 'Search Notes', 'draggable-notes' ),
+			'not_found'          => __( 'No notes found', 'draggable-notes' ),
+			'not_found_in_trash' => __( 'No notes found in Trash', 'draggable-notes' ),
+			'menu_name'          => __( 'Admin Notes', 'draggable-notes' ),
 		);
 
 		$args = array(
@@ -56,34 +65,48 @@ class Admin_Notes_CPT {
 
 	/**
 	 * Ensure an order meta exists.
-	 * @param int   $post_id Post ID.
+	 *
+	 * @param int $post_id Post ID.
 	 */
 	public function ensure_order_meta( $post_id ) {
-		// 1. Don't run during autosave
+
+		// 1. Don't run during autosave.
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
 
-		// 2. Get current order
+		// 2. Check existing meta.
 		$order = get_post_meta( $post_id, '_admin_notes_order', true );
 
-		// 3. If order meta does NOT exist (meta returns '')
-		if ( '' === $order ) {
-
-			global $wpdb;
-
-			// 4. Get the highest existing order among all notes
-			$max = $wpdb->get_var(
-				"SELECT MAX(CAST(meta_value AS UNSIGNED))
-             FROM {$wpdb->postmeta}
-             WHERE meta_key = '_admin_notes_order'"
-			);
-
-			// 5. If there's a max, add +1. Otherwise start from 1.
-			$new = ! empty( $max ) ? intval( $max ) + 1 : 1;
-
-			// 6. Assign new order
-			update_post_meta( $post_id, '_admin_notes_order', $new );
+		// If the note already has order, do nothing.
+		if ( '' !== $order ) {
+			return;
 		}
+
+		// 3. Query for the highest existing order using WP_Query.
+		$args = array(
+			'post_type'      => 'admin_note',
+			'posts_per_page' => 1,
+			'orderby'        => 'meta_value_num',
+			'order'          => 'DESC',
+			'fields'         => 'ids',  // faster.
+			'no_found_rows'  => true,   // performance.
+			'cache_results'  => true,   // uses WP caching layer.
+		);
+
+		$query = new \WP_Query( $args );
+
+		$max_order = 0;
+
+		if ( ! empty( $query->posts ) ) {
+			$max_id    = $query->posts[0];
+			$max_order = intval( get_post_meta( $max_id, '_admin_notes_order', true ) );
+		}
+
+		// 4. New order = max + 1 or 1.
+		$new = ( $max_order > 0 ) ? $max_order + 1 : 1;
+
+		// 5. Save new order.
+		update_post_meta( $post_id, '_admin_notes_order', $new );
 	}
 }

@@ -1,9 +1,27 @@
 <?php
+/**
+ * Plugin activation and initial setup handler.
+ *
+ * This file is responsible for setting up initial options,
+ * managing the post-activation redirect, and adding the settings link.
+ *
+ * @package draggable-notes
+ * @since 1.0.0
+ * @author MD.Ridwan <ridwansweb@email.com>
+ */
+
+namespace Draggable_Notes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+/**
+ * Handles plugin activation, redirect, and setup links.
+ *
+ * Contains methods hooked to the activation hook, 'admin_init', and the
+ * 'plugin_action_links_' filter.
+ */
 class Admin_Notes_Activation {
 
 	/**
@@ -25,7 +43,7 @@ class Admin_Notes_Activation {
 
 		// Add settings link.
 		add_filter(
-			'plugin_action_links_' . plugin_basename( ADMIN_NOTES_FILE ),
+			'plugin_action_links_' . plugin_basename( PLUGMINT_NOTES_FILE ),
 			array( $this, 'add_settings_link' )
 		);
 	}
@@ -42,12 +60,6 @@ class Admin_Notes_Activation {
 		if ( get_option( 'admin_notes_do_activation_redirect', false ) ) {
 			delete_option( 'admin_notes_do_activation_redirect' );
 
-			// Do not redirect during network/bulk activations.
-			// This is a system check, not user-supplied form data.
-			if ( isset( $_GET['activate-multi'] ) ) {
-				return;
-			}
-
 			wp_safe_redirect( admin_url( 'admin.php?page=admin-notes' ) );
 			exit;
 		}
@@ -55,12 +67,15 @@ class Admin_Notes_Activation {
 
 	/**
 	 * Add "Settings" link on Plugins page.
+	 *
+	 * @param array $links links.
+	 * @return array
 	 */
 	public function add_settings_link( $links ) {
 		$link = sprintf(
 			'<a href="%s" style="color:#2271b1">%s</a>',
 			admin_url( 'admin.php?page=admin-notes' ),
-			__( 'Settings', 'wp-dashboard-admin-notes' )
+			__( 'Settings', 'draggable-notes' )
 		);
 
 		array_push( $links, $link );
