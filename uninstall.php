@@ -4,7 +4,7 @@
  *
  * Deletes the Custom Post Type, all associated posts, and post meta.
  *
- * @package draggable-notes
+ * @package plugmint-draggable-notes
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
@@ -19,7 +19,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  */
 $plugmint_notes = get_posts(
 	array(
-		'post_type'      => 'admin_note',
+		'post_type'      => 'pdan_admin_note',
 		'posts_per_page' => -1,
 		'fields'         => 'ids',
 		'post_status'    => 'any',

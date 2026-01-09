@@ -5,12 +5,12 @@
  * This file is responsible for setting up initial options,
  * managing the post-activation redirect, and adding the settings link.
  *
- * @package draggable-notes
+ * @package plugmint-draggable-notes
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
 
-namespace Draggable_Notes\Admin;
+namespace PlugmintDraggableNotes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -29,7 +29,7 @@ class Admin_Notes_Activation {
 	 */
 	public function run_activation() {
 		// Redirect on next page load.
-		add_option( 'admin_notes_do_activation_redirect', true );
+		add_option( 'pdan_admin_notes_do_activation_redirect', true );
 	}
 
 	/**
@@ -43,7 +43,7 @@ class Admin_Notes_Activation {
 
 		// Add settings link.
 		add_filter(
-			'plugin_action_links_' . plugin_basename( PLUGMINT_NOTES_FILE ),
+			'plugin_action_links_' . plugin_basename( PDAN_NOTES_FILE ),
 			array( $this, 'add_settings_link' )
 		);
 	}
@@ -57,10 +57,10 @@ class Admin_Notes_Activation {
 			return;
 		}
 
-		if ( get_option( 'admin_notes_do_activation_redirect', false ) ) {
-			delete_option( 'admin_notes_do_activation_redirect' );
+		if ( get_option( 'pdan_admin_notes_do_activation_redirect', false ) ) {
+			delete_option( 'pdan_admin_notes_do_activation_redirect' );
 
-			wp_safe_redirect( admin_url( 'admin.php?page=admin-notes' ) );
+			wp_safe_redirect( admin_url( 'admin.php?page=pdan-admin-notes' ) );
 			exit;
 		}
 	}
@@ -74,8 +74,8 @@ class Admin_Notes_Activation {
 	public function add_settings_link( $links ) {
 		$link = sprintf(
 			'<a href="%s" style="color:#2271b1">%s</a>',
-			admin_url( 'admin.php?page=admin-notes' ),
-			__( 'Settings', 'draggable-notes' )
+			admin_url( 'admin.php?page=pdan-admin-notes' ),
+			__( 'Settings', 'plugmint-draggable-notes' )
 		);
 
 		array_push( $links, $link );
