@@ -1,7 +1,6 @@
 /* ------------------------------ */
 /* Admin Notes */
 /* ------------------------------ */
-
 .admin-notes-wrap {
 	margin: 16px 20px 0 0;
 }
@@ -114,7 +113,7 @@ p.admin-notes-actions {
 	border-radius: 10px;
 	box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.08);
 	background: #fff;
-	transition: transform 0.18s ease, box-shadow 0.18s ease;
+	/* transition: transform 0.18s ease, box-shadow 0.18s ease; */
 	position: relative;
 	min-height: 80px;
 	display: flex;
@@ -243,6 +242,9 @@ button.admin-note-delete:hover {
 	background: rgba(33, 150, 243, 0.05);
 }
 
+li.admin-note-check-item:hover .check-text {
+	font-weight: 800;
+}
 /* Checklist drag handle */
 span.check-drag {
 	visibility: hidden;
@@ -282,9 +284,11 @@ button.check-remove {
 	position: absolute;
 	right: 10px;
 	display: none;
+	cursor: pointer;
 }
 
 button.check-remove:hover {
+	font-weight: 600;
 	color: red;
 	transform: scale(1.3);
 }
