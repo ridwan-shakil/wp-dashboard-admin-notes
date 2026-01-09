@@ -6,12 +6,12 @@
  * of the Admin Notes plugin, following the dependency injection pattern
  * by initializing various functional classes.
  *
- * @package draggable-notes
+ * @package plugmint-draggable-notes
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
 
-namespace Draggable_Notes\Admin;
+namespace PlugmintDraggableNotes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,7 +39,7 @@ class Loader {
 	/**
 	 * Holds the Admin_Notes_CPT instance.
 	 *
-	 * Manages the registration of the 'admin_note' Custom Post Type.
+	 * Manages the registration of the 'pdan_admin_note' Custom Post Type.
 	 *
 	 * @var Admin_Notes_CPT
 	 */

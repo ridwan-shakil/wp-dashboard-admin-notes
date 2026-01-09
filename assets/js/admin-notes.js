@@ -4,7 +4,7 @@ jQuery(function ($) {
 	// -----------------------------
 	function postAjax(data, callback) {
 		$.post(
-			AdminNotes.ajax_url,
+			pdanAdminNotes.ajax_url,
 			data,
 			function (response) {
 				if (typeof callback === "function") {
@@ -24,8 +24,8 @@ jQuery(function ($) {
 		// Background AJAX — WordPress
 		postAjax(
 			{
-				action: "admin_notes_add",
-				nonce: AdminNotes.nonce,
+				action: "pdan_admin_notes_add",
+				nonce: pdanAdminNotes.nonce,
 			},
 			function (res) {
 				// if fails → show error
@@ -192,9 +192,9 @@ jQuery(function ($) {
 			const newVal = $input.val();
 
 			postAjax({
-				action: "admin_notes_save_title",
+				action: "pdan_admin_notes_save_title",
 				note_id: noteID,
-				nonce: AdminNotes.nonce,
+				nonce: pdanAdminNotes.nonce,
 				title: newVal,
 			});
 
@@ -212,8 +212,8 @@ jQuery(function ($) {
 
 			postAjax(
 				{
-					action: "admin_notes_delete",
-					nonce: AdminNotes.nonce,
+					action: "pdan_admin_notes_delete",
+					nonce: pdanAdminNotes.nonce,
 					note_id: noteID,
 				},
 				function (res) {
@@ -236,10 +236,10 @@ jQuery(function ($) {
 			$(this).html(isClosed ? "&#9654;" : "&#9660;");
 
 			postAjax({
-				action: "admin_notes_toggle_minimize",
+				action: "pdan_admin_notes_toggle_minimize",
 				note_id: noteID,
 				state: isClosed ? 1 : 0,
-				nonce: AdminNotes.nonce,
+				nonce: pdanAdminNotes.nonce,
 			});
 		});
 
@@ -300,10 +300,10 @@ jQuery(function ($) {
 			$card.css("background", `color-mix(in srgb, ${color} 55%, white 45%)`);
 
 			postAjax({
-				action: "admin_notes_save_color",
+				action: "pdan_admin_notes_save_color",
 				note_id: noteID,
 				color,
-				nonce: AdminNotes.nonce,
+				nonce: pdanAdminNotes.nonce,
 			});
 		});
 
@@ -318,10 +318,10 @@ jQuery(function ($) {
 			$card.css("background", `color-mix(in srgb, ${color} 55%, white 45%)`);
 
 			postAjax({
-				action: "admin_notes_save_color",
+				action: "pdan_admin_notes_save_color",
 				note_id: noteID,
 				color,
-				nonce: AdminNotes.nonce,
+				nonce: pdanAdminNotes.nonce,
 			});
 		});
 
@@ -332,10 +332,10 @@ jQuery(function ($) {
 			const visibility = $(this).val();
 
 			postAjax({
-				action: "admin_notes_save_visibility",
+				action: "pdan_admin_notes_save_visibility",
 				note_id: noteID,
 				visibility,
-				nonce: AdminNotes.nonce,
+				nonce: pdanAdminNotes.nonce,
 			});
 		});
 	}
@@ -402,8 +402,8 @@ jQuery(function ($) {
 		});
 
 		postAjax({
-			action: "admin_notes_save_checklist",
-			nonce: AdminNotes.nonce,
+			action: "pdan_admin_notes_save_checklist",
+			nonce: pdanAdminNotes.nonce,
 			note_id: noteID,
 			checklist: JSON.stringify(data),
 		});
@@ -435,8 +435,8 @@ jQuery(function ($) {
 			.filter(Boolean); // remove nulls
 
 		postAjax({
-			action: "admin_notes_save_order",
-			nonce: AdminNotes.nonce,
+			action: "pdan_admin_notes_save_order",
+			nonce: pdanAdminNotes.nonce,
 			order: JSON.stringify(order),
 		});
 	}

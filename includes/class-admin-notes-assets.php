@@ -5,12 +5,12 @@
  * Handles the registration and enqueuing of CSS styles and JavaScript scripts
  * required for the Admin Notes plugin administration pages.
  *
- * @package draggable-notes
+ * @package plugmint-draggable-notes
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
 
-namespace Draggable_notes\Admin;
+namespace PlugmintDraggableNotes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -39,13 +39,13 @@ class Admin_Notes_Assets {
 	 */
 	public function enqueue( $hook = '' ) {
 		// Only enqueue on our admin page(s).
-		if ( 'toplevel_page_admin-notes' === $hook ) {
+		if ( 'toplevel_page_pdan-admin-notes' === $hook ) {
 			// CSS.
 			wp_enqueue_style(
-				'admin-notes-style',
-				PLUGMINT_NOTES_URL . 'assets/css/admin-notes.css',
+				'pdan-notes-style',
+				PDAN_NOTES_URL . 'assets/css/admin-notes.css',
 				array(),
-				PLUGMINT_NOTES_VERSION
+				PDAN_NOTES_VERSION
 			);
 
 			// Enqueue jQuery UI Sortable dependency.
@@ -54,22 +54,22 @@ class Admin_Notes_Assets {
 			);
 			// Main jQuery file.
 			wp_enqueue_script(
-				'admin-notes-script',
-				PLUGMINT_NOTES_URL . 'assets/js/admin-notes.js',
+				'pdan-notes-script',
+				PDAN_NOTES_URL . 'assets/js/admin-notes.js',
 				array( 'jquery', 'jquery-ui-sortable' ),
-				PLUGMINT_NOTES_VERSION,
+				PDAN_NOTES_VERSION,
 				true
 			);
 			// Pass AJAX and localization variables to the script.
 			wp_localize_script(
-				'admin-notes-script',
-				'AdminNotes',
+				'pdan-notes-script',
+				'pdanAdminNotes',
 				array(
 					'ajax_url' => admin_url( 'admin-ajax.php' ),
-					'nonce'    => wp_create_nonce( 'admin_notes_nonce' ),
+					'nonce'    => wp_create_nonce( 'pdan_admin_notes_nonce' ),
 					'strings'  => array(
-						'saving' => __( 'Saving...', 'draggable-notes' ),
-						'saved'  => __( 'Saved', 'draggable-notes' ),
+						'saving' => __( 'Saving...', 'plugmint-draggable-notes' ),
+						'saved'  => __( 'Saved', 'plugmint-draggable-notes' ),
 					),
 				)
 			);

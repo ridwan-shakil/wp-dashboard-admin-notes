@@ -2,12 +2,12 @@
 /**
  * Admin page renderer and helpers.
  *
- * @package draggable-notes
+ * @package plugmint-draggable-notes
  * @since 1.0.0
  * @author MD.Ridwan <ridwansweb@email.com>
  */
 
-namespace Draggable_Notes\Admin;
+namespace PlugmintDraggableNotes\Admin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -29,13 +29,13 @@ class Admin_Notes_Admin {
 	 * Add Admin Notes top-level menu.
 	 */
 	public function add_menu_page() {
-		$capability = apply_filters( 'plugmint_notes_capability', 'edit_posts' );
+		$capability = apply_filters( 'pdan_notes_capability', 'edit_posts' );
 
 		add_menu_page(
-			__( 'Admin Notes', 'draggable-notes' ),
-			__( 'Admin Notes', 'draggable-notes' ),
+			__( 'Admin Notes', 'plugmint-draggable-notes' ),
+			__( 'Admin Notes', 'plugmint-draggable-notes' ),
 			$capability,
-			'admin-notes',
+			'pdan-admin-notes',
 			array( $this, 'render_page' ),
 			'dashicons-edit',
 			3
@@ -47,10 +47,10 @@ class Admin_Notes_Admin {
 	 */
 	public function render_page() {
 		// Capability check.
-		$capability = apply_filters( 'plugmint_notes_capability', 'edit_posts' );
+		$capability = apply_filters( 'pdan_notes_capability', 'edit_posts' );
 
 		if ( ! current_user_can( $capability ) ) {
-			wp_die( esc_html_e( 'You do not have permission to view this page.', 'draggable-notes' ) );
+			wp_die( esc_html_e( 'You do not have permission to view this page.', 'plugmint-draggable-notes' ) );
 		}
 
 		// Get notes ordered by meta _admin_notes_order, pinned first.
@@ -60,12 +60,12 @@ class Admin_Notes_Admin {
 		<div class="wrap admin-notes-wrap">
 			<div class="notes-head-section">
 				<div class="left">
-					<h1><?php esc_html_e( 'Admin Notes', 'draggable-notes' ); ?></h1>
+					<h1><?php esc_html_e( 'Admin Notes', 'plugmint-draggable-notes' ); ?></h1>
 					<div>
 						<?php
 						esc_html_e(
 							'Organize your tasks with draggable sticky notes',
-							'draggable-notes'
+							'plugmint-draggable-notes'
 						)
 						?>
 
@@ -73,42 +73,42 @@ class Admin_Notes_Admin {
 						<div class="tooltip"> &#9432; 
 							<div class="tooltiptext">
 									
-								<strong><?php esc_html_e( 'Quick user Guide', 'draggable-notes' ); ?></strong><br/>
+								<strong><?php esc_html_e( 'Quick user Guide', 'plugmint-draggable-notes' ); ?></strong><br/>
 								
 								<ul>
 									<li>
-										<strong><?php esc_html_e( 'Create a note:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Click “Add New Note”. A new editable note will appear instantly.', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Create a note:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Click “Add New Note”. A new editable note will appear instantly.', 'plugmint-draggable-notes' ); ?>
 									</li>
 									<li>
-										<strong><?php esc_html_e( 'Checklists:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Add tasks, Dubble click to edit, check them off, click "X" to delete them, reorder them as needed & even move note items from one note to another! ', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Checklists:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Add tasks, Dubble click to edit, check them off, click "X" to delete them, reorder them as needed & even move note items from one note to another! ', 'plugmint-draggable-notes' ); ?>
 									</li>
 									<li>
-										<strong><?php esc_html_e( 'Drag & reorder:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Move notes around freely. The plugin saves their position automatically.', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Drag & reorder:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Move notes around freely. The plugin saves their position automatically.', 'plugmint-draggable-notes' ); ?>
 									</li>
 									<li>
-										<strong><?php esc_html_e( 'Colors:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Use preset colors or the color picker to categorize notes visually.', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Colors:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Use preset colors or the color picker to categorize notes visually.', 'plugmint-draggable-notes' ); ?>
 									</li>
 									<li>
-										<strong><?php esc_html_e( 'Visibility:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Choose who can see each note (Only Me, All Admins, Editors & above).', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Visibility:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Choose who can see each note (Only Me, All Admins, Editors & above).', 'plugmint-draggable-notes' ); ?>
 									</li>
 									<li>
-										<strong><?php esc_html_e( 'Minimize:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Click the arrow icon to collapse or expand notes. This state is saved per user.', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Minimize:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Click the arrow icon to collapse or expand notes. This state is saved per user.', 'plugmint-draggable-notes' ); ?>
 									</li>
 									<li>
-										<strong><?php esc_html_e( 'Delete:  ', 'draggable-notes' ); ?></strong>
-										<?php esc_html_e( ' Remove a note using the trash icon.', 'draggable-notes' ); ?>
+										<strong><?php esc_html_e( 'Delete:  ', 'plugmint-draggable-notes' ); ?></strong>
+										<?php esc_html_e( ' Remove a note using the trash icon.', 'plugmint-draggable-notes' ); ?>
 									</li>
 								</ul>
 
 								<p>
-									<em><?php esc_html_e( 'Tips:  ', 'draggable-notes' ); ?></em>
-									<?php esc_html_e( ' Keep notes short for better clarity. Use colors to mark urgency or categories. (e.g., yellow for urgent, green for completed, blue for info etc.)', 'draggable-notes' ); ?>
+									<em><?php esc_html_e( 'Tips:  ', 'plugmint-draggable-notes' ); ?></em>
+									<?php esc_html_e( ' Keep notes short for better clarity. Use colors to mark urgency or categories. (e.g., yellow for urgent, green for completed, blue for info etc.)', 'plugmint-draggable-notes' ); ?>
 								</p>
 								
 							</div>
@@ -117,7 +117,7 @@ class Admin_Notes_Admin {
 				</div>
 				<div class="right">
 					<p class="admin-notes-actions">
-						<button id="admin-notes-add" class="button button-primary"><?php esc_html_e( '+ Add New Note', 'draggable-notes' ); ?></button>
+						<button id="admin-notes-add" class="button button-primary"><?php esc_html_e( '+ Add New Note', 'plugmint-draggable-notes' ); ?></button>
 					</p>
 				</div>
 			</div>
@@ -145,7 +145,7 @@ class Admin_Notes_Admin {
 	 */
 	public function get_notes_for_display() {
 		$args = array(
-			'post_type'      => 'admin_note',
+			'post_type'      => 'pdan_admin_note',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
 			'meta_key'       => '_admin_notes_order',
@@ -259,20 +259,20 @@ class Admin_Notes_Admin {
 				aria-level="3"
 				style="background:<?php echo esc_attr( $color ); ?>; border-top: 4px solid color-mix(in srgb, <?php echo esc_attr( $color ); ?> 80%, black 20%); ">
 
-			<span class="admin-note-drag-handle" title="<?php esc_attr_e( 'Drag to reorder', 'draggable-notes' ); ?>">::</span>
+			<span class="admin-note-drag-handle" title="<?php esc_attr_e( 'Drag to reorder', 'plugmint-draggable-notes' ); ?>">::</span>
 
 			<input class="admin-note-title"
 					value="<?php echo esc_attr( $title ); ?>"
-					aria-label="<?php esc_attr_e( 'Note title', 'draggable-notes' ); ?>" />
+					aria-label="<?php esc_attr_e( 'Note title', 'plugmint-draggable-notes' ); ?>" />
 
 			<div class="admin-note-actions">
 				<button class="admin-note-minimize"
-						title="<?php esc_attr_e( 'Minimize', 'draggable-notes' ); ?>">
+						title="<?php esc_attr_e( 'Minimize', 'plugmint-draggable-notes' ); ?>">
 					<?php echo $collapsed ? '&#9654;' : '&#9660;'; ?>
 				</button>
 
 				<button class="admin-note-delete"
-						title="<?php esc_attr_e( 'Delete', 'draggable-notes' ); ?>">🗑</button>
+						title="<?php esc_attr_e( 'Delete', 'plugmint-draggable-notes' ); ?>">🗑</button>
 			</div>
 		</header>
 
@@ -297,7 +297,7 @@ class Admin_Notes_Admin {
 						</label>
 
 						<button class="check-remove"
-								aria-label="<?php esc_attr_e( 'Remove task', 'draggable-notes' ); ?>">✕
+								aria-label="<?php esc_attr_e( 'Remove task', 'plugmint-draggable-notes' ); ?>">✕
 						</button>
 					</li>
 				<?php endforeach; ?>
@@ -306,7 +306,7 @@ class Admin_Notes_Admin {
 			<div class="admin-note-add">
 				<input type="text"
 						class="admin-note-add-input"
-						placeholder="<?php esc_attr_e( '+ Add a task and press Enter', 'draggable-notes' ); ?>" />
+						placeholder="<?php esc_attr_e( '+ Add a task and press Enter', 'plugmint-draggable-notes' ); ?>" />
 			</div>
 
 			<div class="admin-note-footer">
@@ -340,18 +340,18 @@ class Admin_Notes_Admin {
 					<select class="admin-note-visibility-select" data-note-id="<?php echo esc_attr( $post_id ); ?>">
 						<option value="only_me" 
 							<?php selected( $visibility, 'only_me' ); ?> style="background: <?php echo esc_attr( $color ); ?> ;" >
-							<?php esc_html_e( '🔒 Only Me', 'draggable-notes' ); ?>
+							<?php esc_html_e( '🔒 Only Me', 'plugmint-draggable-notes' ); ?>
 						</option>
 
 						<option value="all_admins" 
 							<?php selected( $visibility, 'all_admins' ); ?> style="background: <?php echo esc_attr( $color ); ?> ;" >
-							<?php esc_html_e( ' 👁️ All Admins', 'draggable-notes' ); ?>
+							<?php esc_html_e( ' 👁️ All Admins', 'plugmint-draggable-notes' ); ?>
 						</option>
 
 						<option value="editors_and_above" 
 							<?php selected( $visibility, 'editors_and_above' ); ?> 
 							style="background: <?php echo esc_attr( $color ); ?> " >
-							<?php esc_html_e( '👨‍👨‍👦 Editors & above', 'draggable-notes' ); ?>
+							<?php esc_html_e( '👨‍👨‍👦 Editors & above', 'plugmint-draggable-notes' ); ?>
 						</option>
 					</select>
 				</div>
