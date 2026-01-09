@@ -60,7 +60,7 @@ class Admin_Notes_Activation {
 		if ( get_option( 'admin_notes_do_activation_redirect', false ) ) {
 			delete_option( 'admin_notes_do_activation_redirect' );
 
-			wp_safe_redirect( admin_url( 'admin.php?page=admin-notes' ) );
+			wp_safe_redirect( admin_url( 'admin.php?page=pdan-admin-notes' ) );
 			exit;
 		}
 	}
@@ -74,7 +74,7 @@ class Admin_Notes_Activation {
 	public function add_settings_link( $links ) {
 		$link = sprintf(
 			'<a href="%s" style="color:#2271b1">%s</a>',
-			admin_url( 'admin.php?page=admin-notes' ),
+			admin_url( 'admin.php?page=pdan-admin-notes' ),
 			__( 'Settings', 'plugmint-draggable-notes' )
 		);
 

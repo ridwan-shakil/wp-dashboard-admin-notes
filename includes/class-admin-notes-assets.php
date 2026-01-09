@@ -39,7 +39,7 @@ class Admin_Notes_Assets {
 	 */
 	public function enqueue( $hook = '' ) {
 		// Only enqueue on our admin page(s).
-		if ( 'toplevel_page_admin-notes' === $hook ) {
+		if ( 'toplevel_page_pdan-admin-notes' === $hook ) {
 			// CSS.
 			wp_enqueue_style(
 				'pdan-notes-style',
