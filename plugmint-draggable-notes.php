@@ -37,18 +37,18 @@ require_once PDAN_NOTES_PATH . 'includes/class-admin-notes-ajax.php';
  *
  * @return void
  */
-function plugmint_notes_on_activate() {
+function pdan_notes_on_activate() {
 	$activation = new PlugmintDraggableNotes\Admin\Admin_Notes_Activation();
 	$activation->run_activation();
 }
-register_activation_hook( __FILE__, 'plugmint_notes_on_activate' );
+register_activation_hook( __FILE__, 'pdan_notes_on_activate' );
 
 /**
  * Initialize the plugin.
  *
  * @return void
  */
-function plugmint_notes_run() {
+function pdan_notes_run() {
 	PlugmintDraggableNotes\Admin\Plugin::instance();
 }
-add_action( 'plugins_loaded', 'plugmint_notes_run' );
+add_action( 'plugins_loaded', 'pdan_notes_run' );
